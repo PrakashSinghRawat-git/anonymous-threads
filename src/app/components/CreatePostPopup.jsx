@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import globalStore from "@/app/store/globalStore";
 
 import { createNewPost } from "@/app/api/actions";
 import { serverTimestamp } from "firebase/firestore";
+import { generateUsername } from "unique-username-generator";
 
 import { toast } from "react-toastify";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 
 const CreatePostPopup = () => {
     const {
@@ -12,17 +16,35 @@ const CreatePostPopup = () => {
         setIsCreatePostVisible,
         allRecentPosts,
         setAllRecentPosts,
+        randomUserName,
+        setRandomUserName,
     } = globalStore();
     const [textMessage, setTextMessage] = useState("");
     const [userName, setUserName] = useState("");
     const [userLocation, setUserLocation] = useState("");
 
+    const [isRotated, setIsRotated] = useState(false);
+
     const handleTogglePopup = () => {
         setIsCreatePostVisible(false);
     };
+
+    useEffect(() => {
+        if (!randomUserName) {
+            const username = generateUsername("-");
+            setRandomUserName(username);
+        }
+    }, []);
+
     const handleSendMessage = async () => {
         console.log("sending message...", textMessage, userName, userLocation);
 
+        if (!textMessage) {
+            return;
+        }
+        if (!userName) {
+            setUserName(randomUserName || generateUsername("-"));
+        }
         const postObj = {
             userName: userName,
             userLocation: userLocation,
@@ -47,6 +69,10 @@ const CreatePostPopup = () => {
         setUserName("");
         setUserLocation("");
     };
+
+    const handleRotate = () => {
+        setIsRotated(!isRotated);
+    };
     return (
         <div className="bg-gray-800  p-1 m-1 rounded-md">
             <div>
@@ -69,12 +95,24 @@ const CreatePostPopup = () => {
                         id="userName"
                         name="userName"
                         value={userName}
-                        placeholder="Ser Vitamin Protein"
+                        placeholder={randomUserName || "Ser Vitamin Protein"}
                         className="mb-1 p-1 w-full bg-gray-100 text-gray-900"
                         onChange={(e) => {
                             setUserName(e.target.value);
                         }}
                     />
+                    <span className="absolute right-0 ">
+                        <FontAwesomeIcon
+                            icon={faArrowsRotate}
+                            className={`text-black text-[25px] my-1 mr-4 transform transition-transform duration-500 ${
+                                isRotated && "rotate-360"
+                            } hover:scale-105 hover:text-blue-600`}
+                            onClick={() => {
+                                handleRotate();
+                                setRandomUserName(generateUsername("-"));
+                            }}
+                        />
+                    </span>
                 </div>
                 <div className=" px-1 pt-1   rounded-md">
                     {" "}

@@ -4,9 +4,11 @@ import globalStore from "@/app/store/globalStore";
 import CreatePostPopup from "./components/CreatePostPopup";
 import PostBox from "@/app/components/PostBox";
 import MessagePaper from "./components/MessagePaper";
+import DragableClosePostButton from "./components/DragableClosePostButton";
 
 import Navbar from "@/app/components/Navbar";
 import { fetchMostRecentPosts } from "@/app/api/actions";
+import { generateUsername } from "unique-username-generator";
 
 export default function Home() {
     const {
@@ -16,6 +18,8 @@ export default function Home() {
         setAllRecentPosts,
         isPostBoxVisible,
         setIsPostBoxVisible,
+        randomUserName,
+        setRandomUserName,
     } = globalStore();
     const message =
         "Hello World! lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
@@ -33,6 +37,19 @@ export default function Home() {
                 console.log("client: error fetching posts: ", err);
             });
     }, []);
+
+    useEffect(() => {
+        if (!randomUserName) {
+            const username = generateUsername("-");
+            setRandomUserName(username);
+        }
+    }, []);
+    // useEffect(() => {
+    //     setInterval(() => {
+    //         console.log("client: randomUserName: ", generateUsername());
+    //     }, 1500);
+    // }, []);
+
     return (
         <section>
             <Navbar />

@@ -9,6 +9,9 @@ const globalStore = create((set) => ({
     isPostBoxVisible: false,
     setIsPostBoxVisible: (value) => set({ isPostBoxVisible: value }),
 
+    likedPosts: [],
+    setLikedPosts: (value) => set({ likedPosts: value }),
+
     activePostId: "",
     setActivePostId: (value) => set({ activePostId: value }),
 
@@ -17,6 +20,9 @@ const globalStore = create((set) => ({
 
     allRecentPosts: [],
     setAllRecentPosts: (value) => set({ allRecentPosts: value }),
+
+    randomUserName: [],
+    setRandomUserName: (value) => set({ randomUserName: value }),
 }));
 
 export default globalStore;

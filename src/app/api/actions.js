@@ -43,12 +43,17 @@ export const createNewPost = async (postObj) => {
 // fetch most recent posts by limit
 export const fetchMostRecentPosts = async (count) => {
     try {
-        if (!count) {
-            count = 10;
-        }
+        // if (!count) {
+        //     count = 10;
+        // }
         const postData = [];
         const postRef = collection(db, "posts");
-        const q = query(postRef, orderBy("createdAt", "desc"), limit(count));
+        let q;
+        if (count) {
+            q = query(postRef, orderBy("createdAt", "desc"), limit(count));
+        } else {
+            q = query(postRef, orderBy("createdAt", "desc"));
+        }
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((post) => {
@@ -100,15 +105,36 @@ export const addComment = async (postId, comment, name) => {
             ];
             await updateDoc(postRef, {
                 comments: updatedComments,
-                commentCount: updatedComments.length,
+                commentsCount: updatedComments.length,
             });
-            console.log("comment added successfully...");
+            console.log("comment added successfully...", updatedComments);
             return;
         } else {
             return null;
         }
     } catch (error) {
         console.error("Error adding comment: ", error);
+        throw error; // You can handle errors appropriately in your application
+    }
+};
+// add like count to a given post with id
+export const addLikeOfPost = async (postId) => {
+    try {
+        const postRef = doc(db, "posts", postId);
+        const postSnapshot = await getDoc(postRef);
+
+        if (postSnapshot.exists()) {
+            const updatedLikes = postSnapshot.data().likes + 1;
+            await updateDoc(postRef, {
+                likes: updatedLikes,
+            });
+            console.log("like added successfully...", updatedLikes);
+            return;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Error adding like: ", error);
         throw error; // You can handle errors appropriately in your application
     }
 };
